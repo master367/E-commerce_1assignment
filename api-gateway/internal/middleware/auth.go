@@ -19,7 +19,6 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Проверка формата "Bearer <token>"
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || parts[0] != "Bearer" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization header"})
@@ -27,7 +26,6 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Парсинг и проверка токена
 		token, err := jwt.Parse(parts[1], func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, jwt.ErrSignatureInvalid
@@ -41,7 +39,6 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Токен валиден, продолжаем выполнение
 		c.Next()
 	}
 }

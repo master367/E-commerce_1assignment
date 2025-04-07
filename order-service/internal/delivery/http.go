@@ -68,7 +68,7 @@ func (h *OrderHandler) UpdateOrder(c *gin.Context) {
 }
 
 func (h *OrderHandler) ListOrders(c *gin.Context) {
-	userIDStr := c.Query("user_id") // Получаем user_id из query-параметра
+	userIDStr := c.Query("user_id")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user_id"})

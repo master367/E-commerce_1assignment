@@ -32,17 +32,14 @@
 <body>
 <h1>E-commerce Platform</h1>
 
-<!-- Поле для JWT-токена -->
 <div class="section">
     <h2>JWT Token</h2>
     <input type="text" id="jwtToken" placeholder="Paste your JWT token here" style="width: 300px;">
     <button onclick="saveToken()">Save Token</button>
 </div>
 
-<!-- Управление продуктами -->
 <div class="section">
     <h2>Products</h2>
-    <!-- Создание продукта -->
     <div>
         <h3>Create Product</h3>
         <input type="text" id="productName" placeholder="Name">
@@ -53,14 +50,12 @@
         <pre id="createProductResult"></pre>
     </div>
 
-    <!-- Список продуктов -->
     <div>
         <h3>List Products</h3>
         <button onclick="listProducts()">Get Products</button>
         <pre id="listProductsResult"></pre>
     </div>
 
-    <!-- Обновление продукта -->
     <div>
         <h3>Update Product</h3>
         <input type="number" id="updateProductId" placeholder="Product ID">
@@ -70,7 +65,6 @@
         <pre id="updateProductResult"></pre>
     </div>
 
-    <!-- Удаление продукта -->
     <div>
         <h3>Delete Product</h3>
         <input type="number" id="deleteProductId" placeholder="Product ID">
@@ -79,10 +73,8 @@
     </div>
 </div>
 
-<!-- Управление заказами -->
 <div class="section">
     <h2>Orders</h2>
-    <!-- Создание заказа -->
     <div>
         <h3>Create Order</h3>
         <input type="number" id="userId" placeholder="User ID">
@@ -93,7 +85,6 @@
         <pre id="createOrderResult"></pre>
     </div>
 
-    <!-- Список заказов -->
     <div>
         <h3>List Orders</h3>
         <input type="number" id="listUserId" placeholder="User ID">
@@ -105,13 +96,11 @@
 <script>
     let jwtToken = '';
 
-    // Сохранение токена
     function saveToken() {
         jwtToken = document.getElementById('jwtToken').value;
         alert('Token saved!');
     }
 
-    // Общая функция для отправки запросов
     async function sendRequest(method, url, body = null) {
         const headers = {
             'Authorization': `Bearer ${jwtToken}`,
@@ -129,7 +118,6 @@
         }
     }
 
-    // Продукты
     async function createProduct() {
         const product = {
             name: document.getElementById('productName').value,
@@ -162,7 +150,6 @@
         document.getElementById('deleteProductResult').innerText = JSON.stringify(result.data, null, 2);
     }
 
-    // Заказы
     async function createOrder() {
         const order = {
             user_id: parseInt(document.getElementById('userId').value),

@@ -18,7 +18,6 @@ func NewOrderRepository(client *mongo.Client) *OrderRepository {
 }
 
 func (r *OrderRepository) CreateOrder(o domain.Order) (int, error) {
-	// Генерация ID (имитация автоинкремента)
 	count, err := r.collection.CountDocuments(context.Background(), bson.M{})
 	if err != nil {
 		return 0, err
