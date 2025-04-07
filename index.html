@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Platform</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        input, button {
+            padding: 5px;
+            margin: 5px 0;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<h1>E-commerce Platform</h1>
+
+<!-- Поле для JWT-токена -->
+<div class="section">
+    <h2>JWT Token</h2>
+    <input type="text" id="jwtToken" placeholder="Paste your JWT token here" style="width: 300px;">
+    <button onclick="saveToken()">Save Token</button>
+</div>
+
+<!-- Управление продуктами -->
+<div class="section">
+    <h2>Products</h2>
+    <!-- Создание продукта -->
+    <div>
+        <h3>Create Product</h3>
+        <input type="text" id="productName" placeholder="Name">
+        <input type="number" id="categoryId" placeholder="Category ID">
+        <input type="number" id="stock" placeholder="Stock">
+        <input type="number" id="price" placeholder="Price">
+        <button onclick="createProduct()">Create</button>
+        <pre id="createProductResult"></pre>
+    </div>
+
+    <!-- Список продуктов -->
+    <div>
+        <h3>List Products</h3>
+        <button onclick="listProducts()">Get Products</button>
+        <pre id="listProductsResult"></pre>
+    </div>
+
+    <!-- Обновление продукта -->
+    <div>
+        <h3>Update Product</h3>
+        <input type="number" id="updateProductId" placeholder="Product ID">
+        <input type="text" id="updateProductName" placeholder="New Name">
+        <input type="number" id="updateStock" placeholder="New Stock">
+        <button onclick="updateProduct()">Update</button>
+        <pre id="updateProductResult"></pre>
+    </div>
+
+    <!-- Удаление продукта -->
+    <div>
+        <h3>Delete Product</h3>
+        <input type="number" id="deleteProductId" placeholder="Product ID">
+        <button onclick="deleteProduct()">Delete</button>
+        <pre id="deleteProductResult"></pre>
+    </div>
+</div>
+
+<!-- Управление заказами -->
+<div class="section">
+    <h2>Orders</h2>
+    <!-- Создание заказа -->
+    <div>
+        <h3>Create Order</h3>
+        <input type="number" id="userId" placeholder="User ID">
+        <input type="number" id="productId" placeholder="Product ID">
+        <input type="number" id="quantity" placeholder="Quantity">
+        <input type="number" id="totalPrice" placeholder="Total Price">
+        <button onclick="createOrder()">Create</button>
+        <pre id="createOrderResult"></pre>
+    </div>
+
+    <!-- Список заказов -->
+    <div>
+        <h3>List Orders</h3>
+        <input type="number" id="listUserId" placeholder="User ID">
+        <button onclick="listOrders()">Get Orders</button>
+        <pre id="listOrdersResult"></pre>
+    </div>
+</div>
+
+<script>
+    let jwtToken = '';
+
+    // Сохранение токена
+    function saveToken() {
+        jwtToken = document.getElementById('jwtToken').value;
+        alert('Token saved!');
+    }
+
+    // Общая функция для отправки запросов
+    async function sendRequest(method, url, body = null) {
+        const headers = {
+            'Authorization': `Bearer ${jwtToken}`,
+            'Content-Type': 'application/json'
+        };
+        const options = { method, headers };
+        if (body) options.body = JSON.stringify(body);
+
+        try {
+            const response = await fetch(url, options);
+            const data = await response.json();
+            return { status: response.status, data };
+        } catch (error) {
+            return { status: 500, data: { error: error.message } };
+        }
+    }
+
+    // Продукты
+    async function createProduct() {
+        const product = {
+            name: document.getElementById('productName').value,
+            category_id: parseInt(document.getElementById('categoryId').value),
+            stock: parseInt(document.getElementById('stock').value),
+            price: parseFloat(document.getElementById('price').value)
+        };
+        const result = await sendRequest('POST', 'http://localhost:8080/products', product);
+        document.getElementById('createProductResult').innerText = JSON.stringify(result.data, null, 2);
+    }
+
+    async function listProducts() {
+        const result = await sendRequest('GET', 'http://localhost:8080/products');
+        document.getElementById('listProductsResult').innerText = JSON.stringify(result.data, null, 2);
+    }
+
+    async function updateProduct() {
+        const id = document.getElementById('updateProductId').value;
+        const product = {
+            name: document.getElementById('updateProductName').value,
+            stock: parseInt(document.getElementById('updateStock').value)
+        };
+        const result = await sendRequest('PATCH', `http://localhost:8080/products/${id}`, product);
+        document.getElementById('updateProductResult').innerText = JSON.stringify(result.data, null, 2);
+    }
+
+    async function deleteProduct() {
+        const id = document.getElementById('deleteProductId').value;
+        const result = await sendRequest('DELETE', `http://localhost:8080/products/${id}`);
+        document.getElementById('deleteProductResult').innerText = JSON.stringify(result.data, null, 2);
+    }
+
+    // Заказы
+    async function createOrder() {
+        const order = {
+            user_id: parseInt(document.getElementById('userId').value),
+            status: 'pending',
+            items: [{
+                product_id: parseInt(document.getElementById('productId').value),
+                quantity: parseInt(document.getElementById('quantity').value)
+            }],
+            total_price: parseFloat(document.getElementById('totalPrice').value)
+        };
+        const result = await sendRequest('POST', 'http://localhost:8080/orders', order);
+        document.getElementById('createOrderResult').innerText = JSON.stringify(result.data, null, 2);
+    }
+
+    async function listOrders() {
+        const userId = document.getElementById('listUserId').value;
+        const result = await sendRequest('GET', `http://localhost:8080/orders/?user_id=${userId}`);
+        document.getElementById('listOrdersResult').innerText = JSON.stringify(result.data, null, 2);
+    }
+</script>
+</body>
+</html>
